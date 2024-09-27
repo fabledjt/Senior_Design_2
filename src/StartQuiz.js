@@ -11,11 +11,10 @@ function StartQuiz() {
 
   return (
     <div className="start-container">
-      <nav className="navbar">
-        <h2>Quiz Navigation</h2>
-      </nav>
       <div className="content">
         <h1>Welcome to the Cheese or Bread Quiz</h1>
+        {/* Add the image here */}
+        <img src="/images/jimboat.png" alt="Cheese or Bread" className="center-image" />
         <button className="start-button" onClick={startQuiz}>Start Quiz</button>
       </div>
     </div>

@@ -57,12 +57,19 @@ function QuizPage() {
     navigate("/menu", { state: { userAnswers } });
   };
 
+  const handleRestartQuiz = () => {
+    navigate("/"); // Navigate back to the start page to restart the quiz
+  };
+
   if (!currentImage) return <div>Loading...</div>;
 
   return (
     <div className="quiz-container">
       <nav className="navbar">
         <h2>Quiz Navigation</h2>
+        <button className="nav-button" onClick={handleRestartQuiz}>
+          Go to Start Quiz
+        </button>
       </nav>
       <div className="content">
         <h1>Is this Cheese or Bread?</h1>

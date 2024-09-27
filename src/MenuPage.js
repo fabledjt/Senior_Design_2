@@ -8,6 +8,10 @@ function MenuPage() {
   const navigate = useNavigate();
 
   const handleRestartQuiz = () => {
+    navigate("/quiz", { state: { userAnswers } }); // Pass userAnswers to the quiz page if needed
+  };
+  
+  const handleReturnStart = () => {
     navigate("/"); // Navigate back to the start page to restart the quiz
   };
 
@@ -15,6 +19,9 @@ function MenuPage() {
     <div className="menu-container">
       <nav className="navbar">
         <h2>Quiz Navigation</h2>
+        <button className="nav-button" onClick={handleReturnStart}>
+          Go to Start Quiz
+        </button>
       </nav>
       <div className="content">
         <h1>All Past Answers</h1>

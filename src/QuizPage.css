@@ -1,79 +1,105 @@
 /* Dark background styling */
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #0d1b2a;
-    color: #f0f0f0;
-  }
-  
-  /* Navbar at the top */
-  .navbar {
-    background-color: #1f1f1f;
-    color: #fff;
-    padding: 1rem;
-    text-align: center;
-    position: fixed;
-    top: 0;
-    width: 100%;
-    box-shadow: 0 4px 2px -2px gray;
-  }
-  
-  .navbar h2 {
-    margin: 0;
-  }
-  
-  /* Center the content */
-  .quiz-container {
-    padding-top: 80px; /* Space for the navbar */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-  }
-  
-  .content {
-    text-align: center;
-    max-width: 600px;
-    width: 100%;
-  }
-  
-  .quiz-image {
-    margin: 20px 0;
-    border-radius: 10px;
-    border: 2px solid #333;
-  }
-  
-  /* Button group styling */
-  .button-group {
-    margin: 20px 0;
-  }
-  
-  .quiz-button {
-    background-color: #007bff;
-    color: white;
-    padding: 10px 20px;
-    margin: 0 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .quiz-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Done button styling */
-  .done-button {
-    background-color: #28a745;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .done-button:hover {
-    background-color: #218838;
-  }
-  
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #0d1b2a; /* Dark background */
+  color: #f0f0f0; /* Light text */
+}
+
+/* Navbar at the top */
+.navbar {
+  background-color: #1f1f1f; /* Dark background for the navbar */
+  color: #fff; /* White text */
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  box-shadow: 0 4px 2px -2px rgba(255, 255, 255, 0.2); /* Subtle shadow */
+  z-index: 1000; /* Ensure it stays above other content */
+  display: flex; /* Use flexbox to align items */
+  justify-content: space-between; /* Space between elements */
+  align-items: center; /* Center items vertically */
+}
+
+/* Navbar title */
+.navbar h2 {
+  margin: 0;
+  font-size: 24px; /* Larger title size */
+}
+
+/* Left-aligned button */
+.start-button {
+  background-color: #007bff; /* Blue button color */
+  color: white; /* White text */
+  padding: 10px 20px; /* Padding */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth transition */
+  margin-left: 10px; /* Margin to separate from the edge */
+}
+
+.start-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Center the content */
+.quiz-container {
+  padding-top: 80px; /* Space for the navbar */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh; /* Full viewport height */
+}
+
+.content {
+  text-align: center;
+  max-width: 600px;
+  width: 100%;
+}
+
+/* Image styling */
+.quiz-image {
+  margin: 20px 0;
+  border-radius: 10px; /* Rounded corners */
+  border: 2px solid #333; /* Dark border */
+}
+
+/* Button group styling */
+.button-group {
+  margin: 20px 0; /* Space above and below button group */
+  display: flex; /* Align buttons horizontally */
+  justify-content: center; /* Center the buttons */
+}
+
+/* Quiz button styling */
+.quiz-button {
+  background-color: #007bff; /* Button color */
+  color: white; /* Text color */
+  padding: 10px 20px; /* Padding */
+  margin: 0 10px; /* Space between buttons */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.quiz-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Done button styling */
+.done-button {
+  background-color: #28a745; /* Green color */
+  color: white; /* Text color */
+  padding: 10px 20px; /* Padding */
+  border: none;
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.done-button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
