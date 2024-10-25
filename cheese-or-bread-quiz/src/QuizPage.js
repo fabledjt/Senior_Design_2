@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./QuizPage.css"; // Import the CSS file
+import axios from 'axios';
 
 const images = [
   { src: "/images/bread1.png", type: "bread" },
@@ -49,6 +50,9 @@ function QuizPage() {
       correctAnswer: currentImage.type,
       userAnswer: answer,
     };
+    useEffect(() => {
+      axios.post('/image_transforms', {img_file: currentImage.src})
+    })
     setUserAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
     selectRandomImage();
   };
