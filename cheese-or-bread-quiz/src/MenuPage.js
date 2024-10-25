@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./MenuPage.css"; // Import the CSS file
 
@@ -7,12 +7,32 @@ function MenuPage() {
   const { userAnswers } = location.state || [];
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (userAnswers && userAnswers.length > 0) {
+      const textContent = userAnswers.map((answer, index) => {
+        return `Answer ${index + 1}:
+Your Answer: ${answer.userAnswer}
+Correct Answer: ${answer.correctAnswer}
+${answer.userAnswer === answer.correctAnswer ? "Correct!" : "Wrong!"}
+----------------------------------------`;
+      }).join("\n");
+
+      const blob = new Blob([textContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "UserAnswers.txt";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  }, [userAnswers]);
+
   const handleRestartQuiz = () => {
-    navigate("/quiz", { state: { userAnswers } }); // Pass userAnswers to the quiz page if needed
+    navigate("/quiz", { state: { userAnswers } });
   };
   
   const handleReturnStart = () => {
-    navigate("/"); // Navigate back to the start page to restart the quiz
+    navigate("/");
   };
 
   return (
@@ -39,9 +59,9 @@ function MenuPage() {
         <button className="restart-button" onClick={handleRestartQuiz}>
           Restart Quiz
         </button>
-        <h4><button className="menureturn-button" onClick={handleReturnStart}>
+        <button className="menureturn-button" onClick={handleReturnStart}>
           Go to Start Quiz
-        </button></h4>
+        </button>
       </div>
     </div>
   );
