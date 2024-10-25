@@ -14,8 +14,10 @@ def get_rotations(img, file_name, file_count):
     img_3.save(f"{getcwd()}\{file_name}\{file_name}_{file_count + 2}.png")
 
 @app.route('/image_transforms', methods=['GET'])
-def transform_image(img_file):
-    with Image.open(img_file) as img:
+def transform_image():
+    img_file = request.args.get("img_file")
+    img_path = getcwd() + img_file
+    with Image.open(img_path) as img:
         file_count = 1
         file_name = img_file.split('.')[0]
         
