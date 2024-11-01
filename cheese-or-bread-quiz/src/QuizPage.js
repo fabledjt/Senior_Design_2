@@ -50,16 +50,14 @@ function QuizPage() {
       correctAnswer: currentImage.type,
       userAnswer: answer,
     };
-    useEffect(() => {
-        axios.get('/image_transforms', { img_file: currentImage.src })
-            .then(response => {
-                // Handle success (optional)
-                console.log(response.data);
-            }).catch(error => {
-                // Handle error (optional)
-                console.error(error);
-            });
-    })
+    axios.post('/image_transforms', { img_file: currentImage.src })
+        .then(response => {
+            // Handle success (optional)
+            console.log(response.data);
+        }).catch(error => {
+            // Handle error (optional)
+            console.error(error);
+        }); 
     setUserAnswers((prevAnswers) => [...prevAnswers, newAnswer]);
     selectRandomImage();
   };
