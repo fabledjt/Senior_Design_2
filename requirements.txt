@@ -1,0 +1,6 @@
+py -m pip install flask
+npm install react-router-dom
+npm install axios
+py -m pip install pillow
+py -m pip install react
+npm install express mongoose
