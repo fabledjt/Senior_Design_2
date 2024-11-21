@@ -1,0 +1,20 @@
+[
+  {
+    "imageName": "cheese12.png",
+    "userAnswer": "bread",
+    "correctAnswer": "cheese",
+    "isCorrect": false
+  },
+  {
+    "imageName": "cheese12.png",
+    "userAnswer": "bread",
+    "correctAnswer": "cheese",
+    "isCorrect": false
+  },
+  {
+    "imageName": "bread2.png",
+    "userAnswer": "bread",
+    "correctAnswer": "bread",
+    "isCorrect": true
+  }
+]
