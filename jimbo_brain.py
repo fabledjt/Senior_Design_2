@@ -10,6 +10,10 @@ import torch
 import torchvision.transforms as transforms
 import pickle
 from PIL import Image
+import threading
+from threading import Thread
+import ImageTransformations
+from flask import Flask, request
 
 print("Finished")
 
@@ -17,8 +21,11 @@ PATH = "model_weights.pth"
 CHEESE = 0
 BREAD = 1
 
+trans = transforms.Compose([transforms.ToTensor(), transforms.Resize(size=128, antialias=True)])
+data_lock = threading.Lock()
+
 class MyModule(nn.Module):
-    def __init__(self, n_features):
+    def __init__(self, n_features: int):
         super(MyModule, self).__init__()
 
         print("n_features: ", n_features)
@@ -63,7 +70,7 @@ def predict_one_tensor(regressor: Regressor, x: torch.Tensor) -> RegTarget:
         y_pred = regressor.module(x).item()
     return y_pred
 
-def train_model(model, guess: int, image: Image):
+def train_model(model: Regressor, metric: metrics.MAE, guess: int, image: Image.Image):
     x = image.resize((128, 128))
 
     y_ten = float2tensor(guess)
@@ -74,62 +81,98 @@ def train_model(model, guess: int, image: Image):
     metric.update(y_true=y, y_pred=y_pred)
     model._learn(x=x_ten, y=y_ten)
 
-def predict_model(model, image: Image):
+def predict_model(model, image: Image.Image) -> RegTarget:
     x = image.resize((128, 128))
     x = trans(x)
     return predict_one_tensor(model, x)
 
 #cheese or bread
-def cob(val):
-    "cheese" if y < 0.5 else "bread"
-
-    
-#tweak lr if need be, i've tested up to 0.01, seems to work at values around 0.005
-model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd')
-trans = transforms.Compose([transforms.ToTensor(), transforms.Resize(size=128, antialias=True)])
-metric = metrics.MAE()
+def cob(val: float) -> str:
+    return "cheese" if val < 0.5 else "bread"
 
 input("Waiting to continue...")
-
-while True:
-    inp = input("Enter a choice: \n\t1) Try a test prediction \n\t2) Close \n\t3) Save model \n\t4) Load model\n\n> ")
-
-    if inp == '1':
-        y = CHEESE
-        # put picture of cheese here!
-        image = Image.open("data\\cheese.png")
-        y_pred = predict_model(model_pipeline, image)
-        print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
-        print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
-        word_true = cob(y)
-        word_guess = cob(y_pred)
-        outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
-        print("Jimbo thinks this is a picture of ", word_guess, ". ", outcome)
         
-        y = BREAD
-        # put image of bread here!
-        image = Image.open("data\\bread.png")
-        y_pred = predict_model(model_pipeline, image)
-        print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
-        print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
-        word_true = cob(y)
-        word_guess = cob(y_pred)
-        outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
-        print("Jimbo thinks this is a picture of ", word_guess, ".", outcome)
+def run_flask_app(model: Regressor, metric: metrics.MAE):
+    app = Flask(__name__)
 
-        
-    elif inp == '2':
-        print("Closing...")
-        exit()
+    @app.route('/image_transforms', methods=['POST'])
+    def transform_image():
+        data = request.json
+        img_file = data["img_file"]
+        user_answer = data["user_answer"]
 
-    elif inp == '3':
-        print("Saving...")
-        with open(PATH, 'wb+') as f:
-            pickle.dump(model_pipeline, f)
+        print(img_file, user_answer)
 
-    elif inp == '4':
-        print("Loading...")
-        model_pipeline = pickle.load(open(PATH,"rb"))
+        guess
 
-    elif inp == '5':
-        print(f'MAE: {metric.get():.2f}')
+        if user_answer == "Cheese":
+            guess = CHEESE
+        elif user_answer == "Bread":
+            guess = BREAD
+        else:
+            return
+
+        with data_lock:
+            for image in ImageTransformations.retrieve_images(img_file):
+                train_model(model, metric, guess, image)
+
+    app.run(debug=False)
+
+
+def user_interface():
+    #tweak lr if need be, i've tested up to 0.01, seems to work at values around 0.005
+    model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd')
+    metric = metrics.MAE()
+
+    while True:
+        inp = input("""\
+    Enter a choice:
+    1) Try a test prediction
+    2) Close
+    3) Save model
+    4) Load model
+    5) Start Flask App
+    6) Print metrics
+                    
+> """)
+
+        if inp == '1':
+            def predict_and_analyze(image_path, true_val):
+                with data_lock:
+                    image = Image.open(image_path).convert("RGB")
+                    y_pred = predict_model(model_pipeline, image)
+                    print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", true_val)
+                    print("Jimbo was off by ", "%.2f"%abs(y_pred - true_val), ".")
+                    word_true = cob(true_val)
+                    word_guess = cob(y_pred)
+                    outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
+                    print("Jimbo thinks this is a picture of", word_guess + ".", outcome)
+
+            predict_and_analyze("cheese-or-bread-quiz\\data\\cheese.png", CHEESE)
+            predict_and_analyze("cheese-or-bread-quiz\\data\\bread.png", BREAD)
+            
+        elif inp == '2':
+            print("Closing...")
+            exit()
+
+        elif inp == '3':
+            print("Saving...")
+            with data_lock:
+                with open(PATH, 'wb+') as f:
+                    pickle.dump(model_pipeline, f)
+
+        elif inp == '4':
+            print("Loading...")
+            with data_lock:
+                model_pipeline = pickle.load(open(PATH,"rb"))
+
+        elif inp == '5':
+            print("Starting flask app...")
+            thread = Thread(target=run_flask_app, args=(model_pipeline, metric))
+            thread.start()
+
+        elif inp == '6':
+            print(f'MAE: {metric.get():.2f}')
+
+if __name__ == "__main__":
+    user_interface()
