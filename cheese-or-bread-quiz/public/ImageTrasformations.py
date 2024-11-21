@@ -17,6 +17,7 @@ def get_rotations(img, file_path, folder, file_count):
 def transform_image():
     data = request.json
     img_file = data["img_file"]
+    user_answer = data["user_answer"]
     img_path = getcwd() + "/cheese-or-bread-quiz/public/" + img_file
     with Image.open(img_path) as img:
         file_count = 1
