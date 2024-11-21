@@ -6,7 +6,27 @@ import "./QuizPage.css"; // Import the CSS file
 const images = [
   { src: "/images/bread1.png", type: "bread" },
   { src: "/images/bread2.png", type: "bread" },
+  { src: "/images/bread3.png", type: "bread" },
+  { src: "/images/bread4.png", type: "bread" },
+  { src: "/images/bread5.png", type: "bread" },
+  { src: "/images/bread6.png", type: "bread" },
+  { src: "/images/bread7.png", type: "bread" },
+  { src: "/images/bread8.png", type: "bread" },
+  { src: "/images/bread9.png", type: "bread" },
+  { src: "/images/bread10.png", type: "bread" },
+  { src: "/images/bread11.png", type: "bread" },
   // ... add all your images here
+  { src: "/images/cheese1.png", type: "cheese" },
+  { src: "/images/cheese2.png", type: "cheese" },
+  { src: "/images/cheese3.png", type: "cheese" },
+  { src: "/images/cheese4.png", type: "cheese" },
+  { src: "/images/cheese5.png", type: "cheese" },
+  { src: "/images/cheese6.png", type: "cheese" },
+  { src: "/images/cheese7.png", type: "cheese" },
+  { src: "/images/cheese8.png", type: "cheese" },
+  { src: "/images/cheese9.png", type: "cheese" },
+  { src: "/images/cheese10.png", type: "cheese" },
+  { src: "/images/cheese11.png", type: "cheese" },
   { src: "/images/cheese12.png", type: "cheese" },
 ];
 
