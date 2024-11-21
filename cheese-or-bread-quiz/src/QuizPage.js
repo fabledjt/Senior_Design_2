@@ -50,7 +50,7 @@ function QuizPage() {
       correctAnswer: currentImage.type,
       userAnswer: answer,
     };
-    axios.post('/image_transforms', { img_file: currentImage.src })
+    axios.post('/image_transforms', { img_file: currentImage.src, user_answer: answer})
         .then(response => {
             // Handle success (optional)
             console.log(response.data);
