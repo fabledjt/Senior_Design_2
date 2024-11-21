@@ -1,6 +1,6 @@
 print("Importing libraries...")
 
-from river import metrics, compose, datasets
+from river import metrics
 from river.base.typing import RegTarget
 from deep_river.regression import Regressor
 from deep_river.utils.tensor_conversion import float2tensor
@@ -96,7 +96,7 @@ def run_flask_app(model: Regressor, metric: metrics.MAE):
     app = Flask(__name__)
 
     @app.route('/image_transforms', methods=['POST'])
-    def transform_image():
+    def train_model_on_answer():
         data = request.json
         img_file = data["img_file"]
         user_answer = data["user_answer"]
@@ -121,12 +121,20 @@ def run_flask_app(model: Regressor, metric: metrics.MAE):
 
 def user_interface():
     #tweak lr if need be, i've tested up to 0.01, seems to work at values around 0.005
-    model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd')
+    use_cuda = torch.cuda.is_available()
+    device_str = "cuda" if use_cuda else "cpu"
+
+    if use_cuda:
+        print("Starting model on the GPU.\n")
+    else:
+        print("Starting model on the CPU.\n")
+
+    model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd', device=device_str)
     metric = metrics.MAE()
 
     while True:
         inp = input("""\
-    Enter a choice:
+Enter a choice:
     1) Try a test prediction
     2) Close
     3) Save model
