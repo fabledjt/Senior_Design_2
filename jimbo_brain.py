@@ -103,11 +103,9 @@ def run_flask_app(model: Regressor, metric: metrics.MAE):
 
         print(img_file, user_answer)
 
-        guess
-
-        if user_answer == "Cheese":
+        if user_answer.lower() == "cheese":
             guess = CHEESE
-        elif user_answer == "Bread":
+        elif user_answer.lower() == "bread":
             guess = BREAD
         else:
             return
