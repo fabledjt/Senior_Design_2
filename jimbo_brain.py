@@ -94,14 +94,12 @@ input("Waiting to continue...")
         
 def run_flask_app(model: Regressor, metric: metrics.MAE):
     app = Flask(__name__)
-
     @app.route('/image_transforms', methods=['POST'])
     def train_model_on_answer():
         data = request.json
         img_file = data["img_file"]
         user_answer = data["user_answer"]
-
-        print(img_file, user_answer)
+        #print(img_file, user_answer)
 
         if user_answer.lower() == "cheese":
             guess = CHEESE
@@ -113,8 +111,9 @@ def run_flask_app(model: Regressor, metric: metrics.MAE):
         with data_lock:
             for image in ImageTransformations.retrieve_images(img_file):
                 train_model(model, metric, guess, image)
-
+        return jsonify({"folder": ""})
     app.run(debug=False)
+    
 
 
 def user_interface():
