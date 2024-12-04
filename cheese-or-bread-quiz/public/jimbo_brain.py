@@ -1,4 +1,4 @@
-print("Importing libraries...")
+#print("Importing libraries...")
 
 from river import metrics, compose, datasets
 from river.base.typing import RegTarget
@@ -11,7 +11,7 @@ import torchvision.transforms as transforms
 import pickle
 from PIL import Image
 
-print("Finished")
+#print("Finished")
 
 PATH = "model_weights.pth"
 CHEESE = 0
@@ -54,6 +54,11 @@ class MyModule(nn.Module):
 
         return x
 
+#tweak lr if need be, i've tested up to 0.01, seems to work at values around 0.005
+model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd')
+trans = transforms.Compose([transforms.ToTensor(), transforms.Resize(size=128, antialias=True)])
+metric = metrics.MAE()
+
 def predict_one_tensor(regressor: Regressor, x: torch.Tensor) -> RegTarget:
     if not regressor.module_initialized:
         regressor.kwargs["n_features"] = x.dim()
@@ -67,11 +72,15 @@ def train_model(model, guess: int, image: Image):
     x = image.resize((128, 128))
 
     y_ten = float2tensor(guess)
+    print("*"*10 + str(x) + "*" * 10)
     x_ten = trans(x)
+    print("*"*10 + str(x_ten) + "*" * 10)
 
+    # Needs river==0.18.0, deep_river==0.2.5, torch==2.0.1, torchvision==0.15.2
     y_pred = predict_one_tensor(model, x_ten)
     print (y_pred)
-    metric.update(y_true=y, y_pred=y_pred)
+    
+    metric.update(y_true=guess, y_pred=y_pred)
     model._learn(x=x_ten, y=y_ten)
 
 def predict_model(model, image: Image):
@@ -83,53 +92,52 @@ def predict_model(model, image: Image):
 def cob(val):
     "cheese" if y < 0.5 else "bread"
 
-    
-#tweak lr if need be, i've tested up to 0.01, seems to work at values around 0.005
-model_pipeline = Regressor(module=MyModule, loss_fn='mse', lr=0.01, optimizer_fn='sgd')
-trans = transforms.Compose([transforms.ToTensor(), transforms.Resize(size=128, antialias=True)])
-metric = metrics.MAE()
 
-input("Waiting to continue...")
+def jimboMenu(model_pipeline, trans, metric):
+    input("Waiting to continue...")
 
-while True:
-    inp = input("Enter a choice: \n\t1) Try a test prediction \n\t2) Close \n\t3) Save model \n\t4) Load model\n\n> ")
+    while True:
+        inp = input("Enter a choice: \n\t1) Try a test prediction \n\t2) Close \n\t3) Save model \n\t4) Load model\n\n> ")
 
-    if inp == '1':
-        y = CHEESE
-        # put picture of cheese here!
-        image = Image.open("data\\cheese.png")
-        y_pred = predict_model(model_pipeline, image)
-        print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
-        print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
-        word_true = cob(y)
-        word_guess = cob(y_pred)
-        outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
-        print("Jimbo thinks this is a picture of ", word_guess, ". ", outcome)
-        
-        y = BREAD
-        # put image of bread here!
-        image = Image.open("data\\bread.png")
-        y_pred = predict_model(model_pipeline, image)
-        print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
-        print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
-        word_true = cob(y)
-        word_guess = cob(y_pred)
-        outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
-        print("Jimbo thinks this is a picture of ", word_guess, ".", outcome)
+        if inp == '1':
+            y = CHEESE
+            # put picture of cheese here!
+            image = Image.open("data\\cheese.png")
+            y_pred = predict_model(model_pipeline, image)
+            print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
+            print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
+            word_true = cob(y)
+            word_guess = cob(y_pred)
+            outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
+            print("Jimbo thinks this is a picture of ", word_guess, ". ", outcome)
+            
+            y = BREAD
+            # put image of bread here!
+            image = Image.open("data\\bread.png")
+            y_pred = predict_model(model_pipeline, image)
+            print("Jimbo predicted:", "%.2f"%(y_pred) + ", the correct answer was:", y)
+            print("Jimbo was off by ", "%.2f"%abs(y_pred - y), ".")
+            word_true = cob(y)
+            word_guess = cob(y_pred)
+            outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
+            print("Jimbo thinks this is a picture of ", word_guess, ".", outcome)
 
-        
-    elif inp == '2':
-        print("Closing...")
-        exit()
+            
+        elif inp == '2':
+            print("Closing...")
+            exit()
 
-    elif inp == '3':
-        print("Saving...")
-        with open(PATH, 'wb+') as f:
-            pickle.dump(model_pipeline, f)
+        elif inp == '3':
+            print("Saving...")
+            with open(PATH, 'wb+') as f:
+                pickle.dump(model_pipeline, f)
 
-    elif inp == '4':
-        print("Loading...")
-        model_pipeline = pickle.load(open(PATH,"rb"))
+        elif inp == '4':
+            print("Loading...")
+            model_pipeline = pickle.load(open(PATH,"rb"))
 
-    elif inp == '5':
-        print(f'MAE: {metric.get():.2f}')
+        elif inp == '5':
+            print(f'MAE: {metric.get():.2f}')
+
+if __name__ == "__main__":
+    jimboMenu(model_pipeline, trans, metric)
