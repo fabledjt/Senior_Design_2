@@ -13,7 +13,7 @@ from PIL import Image
 import threading
 from threading import Thread
 import ImageTransformations
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
 print("Finished")
 
@@ -70,15 +70,15 @@ def predict_one_tensor(regressor: Regressor, x: torch.Tensor) -> RegTarget:
         y_pred = regressor.module(x).item()
     return y_pred
 
-def train_model(model: Regressor, metric: metrics.MAE, guess: int, image: Image.Image):
+def train_model(model: Regressor, metric: metrics.MAE, guess: int, image: Image.Image, transformNumber: int):
     x = image.resize((128, 128))
 
     y_ten = float2tensor(guess)
     x_ten = trans(x)
 
     y_pred = predict_one_tensor(model, x_ten)
-    print (y_pred)
-    metric.update(y_true=y, y_pred=y_pred)
+    print (f"Guess on transformation {transformNumber + 1}: " + cob(y_pred))
+    metric.update(y_true=guess, y_pred=y_pred)
     model._learn(x=x_ten, y=y_ten)
 
 def predict_model(model, image: Image.Image) -> RegTarget:
@@ -109,8 +109,9 @@ def run_flask_app(model: Regressor, metric: metrics.MAE):
             return
 
         with data_lock:
-            for image in ImageTransformations.retrieve_images(img_file):
-                train_model(model, metric, guess, image)
+            print(f"The inputted answer was {user_answer.lower()}")
+            for index, image in enumerate(ImageTransformations.retrieve_images(img_file)):
+                train_model(model, metric, guess, image, index)
         return jsonify({"folder": ""})
     app.run(debug=False)
     
@@ -153,8 +154,8 @@ Enter a choice:
                     outcome = "CORRECT!" if word_guess == word_true else "WRONG!"
                     print("Jimbo thinks this is a picture of", word_guess + ".", outcome)
 
-            predict_and_analyze("cheese-or-bread-quiz\\data\\cheese.png", CHEESE)
-            predict_and_analyze("cheese-or-bread-quiz\\data\\bread.png", BREAD)
+            predict_and_analyze("C:/Users/swerv/OneDrive/Desktop/Senior_Design_2/cheese-or-bread-quiz/data/cheese.png", CHEESE)
+            predict_and_analyze("C:/Users/swerv/OneDrive/Desktop/Senior_Design_2/cheese-or-bread-quiz/data/bread.png", BREAD)
             
         elif inp == '2':
             print("Closing...")

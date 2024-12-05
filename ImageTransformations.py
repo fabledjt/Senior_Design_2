@@ -18,7 +18,7 @@ def get_rotations(img: Image.Image) -> list:
     return imgs
 
 def retrieve_images(img_file: str) -> list:
-    img_path = getcwd() + "/cheese-or-bread-quiz/public/" + img_file
+    img_path = "C:/Users/swerv/OneDrive/Desktop/Senior_Design_2/cheese-or-bread-quiz/public" + img_file
     with Image.open(img_path).convert("RGB") as img:
         return get_rotations(img)
  
